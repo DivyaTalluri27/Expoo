@@ -23,260 +23,156 @@ from rest_framework.views import APIView
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 
+
+
 # from django.shortcuts import (get_object_or_404)
 
 # Create your views here.
-class Event_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            event_data= Event.objects.create(
-                                            name=register_data['name'],
-                                            startDate=register_data['startDate'],
-                                            endDate=register_data['endDate'],
-                                            status=register_data['status'],
-                                            registrationCharge=register_data['registrationCharge'],
-                                            registrationTax=register_data['registrationTax'],
-                                            registrationTotal=register_data['registrationTotal'],
-                                            fileUpload=register_data['fileUpload'],
-                                            description=register_data['description']
-                                            )
-            event_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
+# class Table(APIView):
 
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
+'''Event'''
+def eventApi(request): 
+    if request.method=='GET':
 
-class Event_List(APIView):
-    def get(self,request):
-        events=Event.objects.all()
-        serializer=EventSerializer(events,many=True)
-        return JsonResponse(serializer.data,safe=False)
+        events = Event.objects.all()
+        eventserializer = EventSerializer(events, many=True)
 
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            event=Event.objects.get(id=id)
-            event.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
+        supportedby = Supportedby.objects.all()
+        supportedbyserializer = SupportedbySerializer(supportedby, many=True)
+
+        ourpartner = our_partner.objects.all()
+        ourpartnerSerializer = our_partnerSerializer(ourpartner, many=True)
+
+        association = Association.objects.all()
+        associationserializer = AssociationSerializer(association, many=True)
+
+        mediapartner = Media_Partner.objects.all()
+        mediapartnerSerializer = Media_PartnerSerializer(association, many=True)
+
+        testimonials = Testimonials.objects.all()
+        testimonialsserializer = TestimonialsSerializer(testimonials, many=True)
+
+        speakers = Speakers.objects.all()
+        speakersserializer = SpeakersSerializer(speakers, many=True)
+
+        return JsonResponse({
+            'event':eventserializer.data,
+            'support':supportedbyserializer.data,
+            'partner':ourpartnerSerializer.data,
+            'associate':associationserializer.data,
+            'media':mediapartnerSerializer.data,
+            'test':testimonialsserializer.data,
+            'speak':speakersserializer.data
+            }, safe=False)
         
-    
-    
-    # def delete(self,request,id):
-        # delete_event=request.data
-        # delete_event=self.get_object(id=id)
-         # delete_event = delete_event.objects.filter(pk=id).delete()
-        # event=Event.objects.get(id=delete_event["id"])
-        # event.delete()
-        # return JsonResponse("successfully deleted!!",safe=False)
+    elif request.method=='POST':
+        event_data = JSONParser().parse(request)
+        eventSerializer = EventSerializer(data=event_data)
+        if eventserializer.is_valid():
+            eventserializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
 
 
-class Supportedby_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            supportedby_data= Supportedby.objects.create(
-                                            nameofthecompany=register_data['nameofthecompany'],
-                                            imgurl=register_data['imgurl']
-                                           )
-            supportedby_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
-
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
-
-
-class Supportedby_List(APIView):
-    def get(self,request):
-        supportedby=Supportedby.objects.all()
-        serializer=SupportedbySerializer(supportedby,many=True)
-        return JsonResponse(serializer.data,safe=False)  
-
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            supportedby=Supportedby.objects.get(id=id)
-            supportedby.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
-
+        
+'''SUPPORTED BY'''
+def supportedbyApi(self,request): #id is delect method to delete based on id number
+    if request.method=='GET':
+        supportedby = Supportedby.objects.all()
+        supportedbyserializer = SupportedbySerializer(supportedby, many=True)
+        return JsonResponse(supportedbyserializer.data, safe=False)
+        
+    elif request.method=='POST':
+        supportedby_data = JSONParser().parse(request)
+        supportedbyserializer = SupportedbySerializer(data=supportedby_data)
+        if supportedbyserializer.is_valid():
+            supportedbyserializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
+        
 
 '''OUR PARTNERS'''
-class our_partner_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            ourpartner_data= our_partner.objects.create(
-                                            name=register_data['name'],
-                                            img_url=register_data['img_url'],
-                                            link=register_data['link']
-                                           )
+def ourpartnerApi(self,request): #id is delect method to delete based on id number
+    if request.method=='GET':
+        ourpartner = our_partner.objects.all()
+        ourpartnerSerializer = our_partnerSerializer(ourpartner, many=True)
+        return JsonResponse(ourpartnerSerializer.data, safe=False)
+        
+    elif request.method=='POST':
+        ourpartner_data = JSONParser().parse(request)
+        ourpartnerSerializer = our_partnerSerializer(data=ourpartner_data)
+        if ourpartnerSerializer.is_valid():
+            ourpartnerSerializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
 
-            ourpartner_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
-
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
-
-
-class our_partner_List(APIView):
-    def get(self,request):
-        ourpartner=our_partner.objects.all()
-        serializer=our_partnerSerializer(ourpartner,many=True)
-        return JsonResponse(serializer.data,safe=False)
-
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            ourpartner=our_partner.objects.get(id=id)
-            ourpartner.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
 
 
 '''ASSOCIATION'''
-class Association_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            association_data= Association.objects.create(
-                                            name=register_data['name'],
-                                            img_url=register_data['img_url'],
-                                            link=register_data['link']
-                                           )
-            association_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
+def associationApi(self,request): #id is delect method to delete based on id number
+    if request.method=='GET':
+        association = Association.objects.all()
+        associationserializer = AssociationSerializer(association, many=True)
+        return JsonResponse(associationserializer.data, safe=False)
+        
+    elif request.method=='POST':
+        association_data = JSONParser().parse(request)
+        associationserializer = AssociationSerializer(data=association_data)
+        if associationserializer.is_valid():
+            associationserializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
 
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
-
-
-class Association_List(APIView):
-    def get(self,request):
-        association=Association.objects.all()
-        serializer=AssociationSerializer(association,many=True)
-        return JsonResponse(serializer.data,safe=False)
-
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            association=Association.objects.get(id=id)
-            association.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
 
 
 '''MEDIA PARTNER'''
-class Media_Partner_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            mediapartner_data= Media_Partner.objects.create(
-                                            name=register_data['name'],
-                                            img_url=register_data['img_url'],
-                                            link=register_data['link']
-                                           )
-            mediapartner_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
-
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
-
-
-class Media_Partner_List(APIView):
-    def get(self,request):
-        mediapartner=Media_Partner.objects.all()
-        serializer=AssociationSerializer(mediapartner,many=True)
-        return JsonResponse(serializer.data,safe=False)
-
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            mediapartner=Media_Partner.objects.get(id=id)
-            mediapartner.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
-
+def mediapartnerApi(self,request): #id is delect method to delete based on id number
+    if request.method=='GET':
+        mediapartner = Media_Partner.objects.all()
+        mediapartnerSerializer = Media_PartnerSerializer(association, many=True)
+        return JsonResponse(mediapartnerSerializer.data, safe=False)
+        
+    elif request.method=='POST':
+        mediapartner_data = JSONParser().parse(request)
+        mediapartnerserializer = Media_PartnerSerializer(data=association_data)
+        if mediapartnerserializer.is_valid():
+            mediapartnerserializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
 
 
 '''TESTIMONIALS'''
-class Testimonials_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            testimonials_data= Testimonials.objects.create(
-                                            name=register_data['name'],
-                                            img_url=register_data['img_url'],
-                                            link=register_data['link']
-                                           )
-            testimonials_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
-
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
-
-
-class Testimonials_List(APIView):
-    def get(self,request):
-        testimonials=Testimonials.objects.all()
-        serializer=TestimonialsSerializer(testimonials,many=True)
-        return JsonResponse(serializer.data,safe=False)
-
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            testimonials=Testimonials.objects.get(id=id)
-            testimonials.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
-
+def testimonialsApi(self,request): #id is delect method to delete based on id number
+    if request.method=='GET':
+        testimonials = Testimonials.objects.all()
+        testimonialsserializer = TestimonialsSerializer(testimonials, many=True)
+        return JsonResponse(testimonialsserializer.data, safe=False)
+        
+    elif request.method=='POST':
+        testimonials_data = JSONParser().parse(request)
+        testimonialsserializer = TestimonialsSerializer(data=testimonials_data)
+        if testimonialsserializer.is_valid():
+            testimonialsserializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
 
 
 '''SPEAKERS'''
-class Speakers_Register(APIView):
-    def post(self,request):
-        try:
-            register_data=JSONParser().parse(request)
-            speakers_data= Speakers.objects.create(
-                                            name=register_data['name'],
-                                            img_url=register_data['img_url'],
-                                            link=register_data['link']
-                                           )
-            speakers_data.save()
-            return JsonResponse("successfully registered!!",safe=False)
+def speakersApi(self,request): #id is delect method to delete based on id number
+    if request.method=='GET':
+        speakers = Speakers.objects.all()
+        speakersserializer = SpeakersSerializer(speakers, many=True)
+        return JsonResponse(speakersserializer.data, safe=False)
+        
+    elif request.method=='POST':
+        speakers_data = JSONParser().parse(request)
+        speakersserializer = SpeakersSerializer(data=speakers_data)
+        if speakersserializer.is_valid():
+            speakersserializer.save()
+            return JsonResponse(" Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
 
-        except IntegrityError:
-            return JsonResponse('user of this data is already exist!!',safe=False)
 
-
-class Speakers_List(APIView):
-    def get(self,request):
-        speakers=Speakers.objects.all()
-        serializer=SpeakersSerializer(testimonials,many=True)
-        return JsonResponse(serializer.data,safe=False)
-
-@csrf_exempt
-def UserDelete(request,id=0):
-    try:
-        if request.method=='DELETE':
-            speakers=Speakers.objects.get(id=id)
-            speakers.delete()
-            return JsonResponse('deleted successfully!!',safe=False)
-    except Exception:
-        return JsonResponse('Id not found!!',safe=False)
       
 
     

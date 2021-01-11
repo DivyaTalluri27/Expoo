@@ -29,7 +29,7 @@ class SupportedbySerializer(serializers.ModelSerializer):
         model = Supportedby
         fields = (
                  'nameofthecompany',
-                 'imgurl'
+                 'imgurl',
                  )
 
 

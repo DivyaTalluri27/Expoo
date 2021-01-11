@@ -16,7 +16,7 @@ class Event(models.Model):
 class Supportedby(models.Model):
     nameofthecompany=models.CharField(max_length=100)
     imgurl=models.ImageField()
-    Event=models.ForeignKey(Event, on_delete=models.SET_NULL, null=True)
+    eveid=models.ForeignKey(Event, on_delete=models.SET_NULL, null=True)
 
 class our_partner(models.Model):
     name=models.CharField(max_length=200)
